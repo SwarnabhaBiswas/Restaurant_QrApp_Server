@@ -1,13 +1,40 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
-const { nanoid } = require('nanoid');
+
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const cors = require("cors");
+const fs = require("fs");
+const { nanoid } = require("nanoid");
+const QRCode = require("qrcode");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 app.use('/menus', express.static(path.join(__dirname, 'public/menus')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+const upload = multer({ dest: path.join(__dirname, "public/uploads") });
+
+app.post("/upload-pdf", upload.single("pdf"), async (req, res) => {
+  const originalExt = path.extname(req.file.originalname);
+  const newFileName = `menu_${nanoid()}${originalExt}`;
+  const newPath = path.join(__dirname, "public/uploads", newFileName);
+
+  fs.renameSync(req.file.path, newPath);
+
+  const url = `http://localhost:5000/uploads/${newFileName}`;
+
+  try {
+    const qrCode = await QRCode.toDataURL(url); // ✅ Generate QR as base64 image
+    res.json({ url, qrCode }); // ✅ Return both
+  } catch (err) {
+    console.error("QR generation error:", err);
+    res.status(500).json({ error: "Failed to generate QR code." });
+  }
+});
 
 app.post('/generate', (req, res) => {
   const { menu, template } = req.body;
