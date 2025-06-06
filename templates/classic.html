@@ -1,8 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><title>Modern Menu</title></head>
-<body style="font-family: sans-serif; padding: 20px;">
-  <h1>Menu</h1>
-  <div>{{menu}}</div>
+<head>
+  <title>Modern Menu</title>
+  <link rel="stylesheet" href="/styles/modern.css" />
+</head>
+<body>
+  <div class="menu-container">
+    <h1>Menu</h1>
+    <div id="menu-root"></div>
+  </div>
+
+  {{menuDataScript}} <!-- injected script here -->
+
+  <script>
+    const menuRoot = document.getElementById('menu-root');
+    const data = window.menuData;
+
+    for (const category in data) {
+      const section = document.createElement('div');
+      section.innerHTML = `<h2>${category}</h2><ul>` +
+        data[category].map(item => `<li>${item.dish} - ₹${item.price}</li>`).join('') +
+        `</ul>`;
+      menuRoot.appendChild(section);
+    }
+  </script>
 </body>
 </html>

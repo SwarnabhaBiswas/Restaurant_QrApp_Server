@@ -25,7 +25,7 @@ app.post("/upload-pdf", upload.single("pdf"), async (req, res) => {
 
   fs.renameSync(req.file.path, newPath);
 
-  const url = `http://localhost:5000/uploads/${newFileName}`;
+  const url = `${req.protocol}://${req.get('host')}/uploads/${newFileName}`;
 
   try {
     const qrCode = await QRCode.toDataURL(url); // ✅ Generate QR as base64 image
@@ -59,7 +59,8 @@ app.post('/generate', (req, res) => {
 
   const templatePath = path.join(__dirname, 'templates', `${template}.html`);
   let html = fs.readFileSync(templatePath, 'utf-8');
-  html = html.replace('{{menu}}', safeMenu);
+  const menuDataScript = `<script> window.menuData = ${JSON.stringify(groupedMenu)};</script>`;
+  html = html.replace('{{menuDataScript}}', menuDataScript);
 
   const outputPath = path.join(__dirname, 'public/menus', `${id}.html`);
   fs.writeFileSync(outputPath, html);
