@@ -38,11 +38,11 @@
 </head>
 <body>
   <div class="menu-container">
-    <h1 id="restaurant-title"></h1>
+    <h1 id="restaurant-title">Menu</h1>
     <div id="menu-root"></div>
   </div>
 
-  {{menuDataScript}}
+  <script>window.restaurantName = "OONA";</script><script>window.menuData = {"Starters":[{"category":"Starters","dish":"noodles","price":"504"}],"Main":[{"category":"Main","dish":"chicken","price":"555"}]};</script>
 
   <script>
     document.getElementById("restaurant-title").innerText = window.restaurantName || "Menu";
