@@ -37,30 +37,21 @@ app.post("/upload-pdf", upload.single("pdf"), async (req, res) => {
 });
 
 app.post('/generate', (req, res) => {
-  const { menu, template } = req.body;
+  const { menu, template, restaurantName } = req.body;
   const id = nanoid();
 
-  // Group menu by category
   const groupedMenu = menu.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
     acc[item.category].push(item);
     return acc;
   }, {});
 
-  // Build HTML string with categories once
-  let safeMenu = '';
-  for (const [category, items] of Object.entries(groupedMenu)) {
-    safeMenu += `<p><strong>${category} -</strong></p><ul>`;
-    items.forEach(({ dish, price }) => {
-      safeMenu += `<li>${dish} - ₹${price}</li>`;
-    });
-    safeMenu += '</ul>';
-  }
+  const restaurantScript = `<script>window.restaurantName = ${JSON.stringify(restaurantName)};</script>`;
+  const menuDataScript = `<script>window.menuData = ${JSON.stringify(groupedMenu)};</script>`;
 
   const templatePath = path.join(__dirname, 'templates', `${template}.html`);
   let html = fs.readFileSync(templatePath, 'utf-8');
-  const menuDataScript = `<script> window.menuData = ${JSON.stringify(groupedMenu)};</script>`;
-  html = html.replace('{{menuDataScript}}', menuDataScript);
+  html = html.replace('{{menuDataScript}}', restaurantScript + menuDataScript);
 
   const outputPath = path.join(__dirname, 'public/menus', `${id}.html`);
   fs.writeFileSync(outputPath, html);
@@ -68,6 +59,7 @@ app.post('/generate', (req, res) => {
   const url = `http://localhost:5000/menus/${id}.html`;
   res.json({ url });
 });
+
 
 
 app.listen(5000, () => console.log('Server running on http://localhost:5000'));

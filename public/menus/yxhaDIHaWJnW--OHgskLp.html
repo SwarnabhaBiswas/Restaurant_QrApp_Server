@@ -38,11 +38,11 @@
 </head>
 <body>
   <div class="menu-container">
-    <h1 id="restaurant-title"></h1>
+    <h1 id="restaurant-title">Menu</h1>
     <div id="menu-root"></div>
   </div>
 
-  {{menuDataScript}}
+  <script>window.restaurantName = undefined;</script><script>window.menuData = {"vgdfgdfg":[{"category":"vgdfgdfg","dish":"fdgdfg","price":"40"},{"category":"vgdfgdfg","dish":"ghug","price":"40"}],"vgdfgdfgcfgmcfmg":[{"category":"vgdfgdfgcfgmcfmg","dish":"hvjhvm","price":"70"}]};</script>
 
   <script>
     document.getElementById("restaurant-title").innerText = window.restaurantName || "Menu";
