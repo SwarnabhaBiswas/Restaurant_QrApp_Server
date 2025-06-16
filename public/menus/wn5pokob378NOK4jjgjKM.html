@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Modern Menu</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sriracha&display=swap');
+    body {
+      font-family: 'Sriracha', cursive;
+      padding: 2rem;
+      background: #f9f9f9;
+      color: #333;
+    }
+    .menu-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      margin-top: 1.5rem;
+      color: #555;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-container">
+    <h1 id="restaurant-title"></h1>
+    <div id="menu-root"></div>
+  </div>
+
+  <script>window.restaurantName = "sdfsd";</script><script>window.menuData = {"dsf":[{"category":"dsf","dish":"dsfds","price":"345"}]};</script>
+
+  <script>
+    document.getElementById("restaurant-title").innerText = window.restaurantName || "Menu";
+
+    const menuRoot = document.getElementById('menu-root');
+    const data = window.menuData;
+
+    for (const category in data) {
+      const section = document.createElement('div');
+      section.innerHTML = `<h2>${category}</h2><ul>` +
+        data[category].map(item => `<li>${item.dish} - ₹${item.price}</li>`).join('') +
+        `</ul>`;
+      menuRoot.appendChild(section);
+    }
+  </script>
+</body>
+</html>

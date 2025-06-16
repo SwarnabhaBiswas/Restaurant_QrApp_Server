@@ -4,35 +4,53 @@
   <meta charset="UTF-8" />
   <title>Modern Menu</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Delius&family=Fascinate+Inline&family=Sriracha&display=swap');
     body {
       font-family: 'Segoe UI', sans-serif;
       padding: 2rem;
       background: #f9f9f9;
-      color: #333;
+      background: linear-gradient(to right, #f9f9f9, #ffe1a9);
     }
     .menu-container {
-      max-width: 600px;
+      max-width: 1000px;
       margin: 0 auto;
-      background: white;
+      background-color: #fff0d4;
       padding: 2rem;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     h1 {
+      font-family: "Fascinate Inline", system-ui;
+      font-size: 3.5rem;
       text-align: center;
       margin-bottom: 1rem;
+      color: #8a4b3b;
+      text-transform: uppercase;
     }
     h2 {
+      font-family: 'Sriracha', cursive;
+      font-size: 2rem;
       margin-top: 1.5rem;
-      color: #555;
+      color: #c97e47;
+      padding-left: 10rem;
+      text-transform: capitalize;
     }
     ul {
       list-style: none;
       padding: 0;
     }
     li {
+      text-transform: capitalize;
+      font-family: "Delius", cursive;
+      font-size: 1.5rem;
+      padding: 0 10rem ;
+      color: #333333;
+      border-bottom: 1px;
+    }
+    .menu-item{
+      display: flex;
+      justify-content: space-between;
       padding: 0.5rem 0;
-      border-bottom: 1px solid #eee;
     }
   </style>
 </head>
@@ -53,7 +71,7 @@
     for (const category in data) {
       const section = document.createElement('div');
       section.innerHTML = `<h2>${category}</h2><ul>` +
-        data[category].map(item => `<li>${item.dish} - ₹${item.price}</li>`).join('') +
+        data[category].map(item => `<div class="menu-item"><li>${item.dish}</li><li>₹${item.price}</li></div>`).join('') +
         `</ul>`;
       menuRoot.appendChild(section);
     }
