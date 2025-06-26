@@ -56,7 +56,7 @@ app.post('/generate', (req, res) => {
   const outputPath = path.join(__dirname, 'public/menus', `${id}.html`);
   fs.writeFileSync(outputPath, html);
 
-  const url = `http://localhost:5000/menus/${id}.html`;
+  const url = `https://restaurant-qrapp-server.onrender.com/${id}.html`;
   res.json({ url });
 });
 
