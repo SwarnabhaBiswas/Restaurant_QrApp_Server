@@ -56,10 +56,10 @@ app.post('/generate', (req, res) => {
   const outputPath = path.join(__dirname, 'public/menus', `${id}.html`);
   fs.writeFileSync(outputPath, html);
 
-  const url = `https://restaurant-qrapp-server.onrender.com/${id}.html`;
+  const url = `https://restaurant-qrapp-server.onrender.com/menus/${id}.html`;
   res.json({ url });
 });
 
 
-
-app.listen(5000, () => console.log('Server running on http://localhost:5000'));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
