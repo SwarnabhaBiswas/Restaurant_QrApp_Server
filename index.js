@@ -48,7 +48,6 @@ app.post("/upload-pdf", upload.single("pdf"), async (req, res) => {
   }
 });
 
-// ✅ Generate HTML menu page from data and template
 app.post('/generate', (req, res) => {
   try {
     const { menu, template, restaurantName } = req.body;
@@ -86,6 +85,7 @@ app.post('/generate', (req, res) => {
     console.error("Error in /generate:", err);
     res.status(500).json({ error: "Failed to generate menu." });
   }
+  console.log("Received generate request with:", { menu, template, restaurantName });
 });
 
 // ✅ Start server on correct port
