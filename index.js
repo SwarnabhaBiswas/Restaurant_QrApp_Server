@@ -1,4 +1,3 @@
-
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -11,55 +10,84 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/menus', express.static(path.join(__dirname, 'public/menus')));
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// ✅ Ensure required folders exist
+const menusDir = path.join(__dirname, "public/menus");
+const uploadsDir = path.join(__dirname, "public/uploads");
 
+if (!fs.existsSync(menusDir)) {
+  fs.mkdirSync(menusDir, { recursive: true });
+}
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// ✅ Serve static files
+app.use('/menus', express.static(menusDir));
+app.use('/uploads', express.static(uploadsDir));
 app.use(express.static(path.join(__dirname, "public")));
 
-const upload = multer({ dest: path.join(__dirname, "public/uploads") });
+// ✅ Setup Multer for file uploads
+const upload = multer({ dest: uploadsDir });
 
+// ✅ Upload PDF and generate QR code
 app.post("/upload-pdf", upload.single("pdf"), async (req, res) => {
-  const originalExt = path.extname(req.file.originalname);
-  const newFileName = `menu_${nanoid()}${originalExt}`;
-  const newPath = path.join(__dirname, "public/uploads", newFileName);
-
-  fs.renameSync(req.file.path, newPath);
-
-  const url = `${req.protocol}://${req.get('host')}/uploads/${newFileName}`;
-
   try {
-    const qrCode = await QRCode.toDataURL(url); // ✅ Generate QR as base64 image
-    res.json({ url, qrCode }); // ✅ Return both
+    const originalExt = path.extname(req.file.originalname);
+    const newFileName = `menu_${nanoid()}${originalExt}`;
+    const newPath = path.join(uploadsDir, newFileName);
+
+    fs.renameSync(req.file.path, newPath);
+
+    const url = `${req.protocol}://${req.get('host')}/uploads/${newFileName}`;
+    const qrCode = await QRCode.toDataURL(url); // ✅ Generate base64 QR code
+
+    res.json({ url, qrCode }); // ✅ Return both URL and QR code
   } catch (err) {
     console.error("QR generation error:", err);
-    res.status(500).json({ error: "Failed to generate QR code." });
+    res.status(500).json({ error: "Failed to upload PDF or generate QR." });
   }
 });
 
+// ✅ Generate HTML menu page from data and template
 app.post('/generate', (req, res) => {
-  const { menu, template, restaurantName } = req.body;
-  const id = nanoid();
+  try {
+    const { menu, template, restaurantName } = req.body;
+    const id = nanoid();
 
-  const groupedMenu = menu.reduce((acc, item) => {
-    if (!acc[item.category]) acc[item.category] = [];
-    acc[item.category].push(item);
-    return acc;
-  }, {});
+    if (!menu || !template || !restaurantName) {
+      return res.status(400).json({ error: "Missing menu data, template, or restaurant name." });
+    }
 
-  const restaurantScript = `<script>window.restaurantName = ${JSON.stringify(restaurantName)};</script>`;
-  const menuDataScript = `<script>window.menuData = ${JSON.stringify(groupedMenu)};</script>`;
+    const groupedMenu = menu.reduce((acc, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item);
+      return acc;
+    }, {});
 
-  const templatePath = path.join(__dirname, 'templates', `${template}.html`);
-  let html = fs.readFileSync(templatePath, 'utf-8');
-  html = html.replace('{{menuDataScript}}', restaurantScript + menuDataScript);
+    const restaurantScript = `<script>window.restaurantName = ${JSON.stringify(restaurantName)};</script>`;
+    const menuDataScript = `<script>window.menuData = ${JSON.stringify(groupedMenu)};</script>`;
 
-  const outputPath = path.join(__dirname, 'public/menus', `${id}.html`);
-  fs.writeFileSync(outputPath, html);
+    const templatePath = path.join(__dirname, 'templates', `${template}.html`);
 
-  const url = `https://restaurant-qrapp-server.onrender.com/menus/${id}.html`;
-  res.json({ url });
+    if (!fs.existsSync(templatePath)) {
+      return res.status(404).json({ error: "Template not found." });
+    }
+
+    let html = fs.readFileSync(templatePath, 'utf-8');
+    html = html.replace('{{menuDataScript}}', restaurantScript + menuDataScript);
+
+    const outputPath = path.join(menusDir, `${id}.html`);
+    fs.writeFileSync(outputPath, html);
+
+    const url = `${req.protocol}://${req.get('host')}/menus/${id}.html`;
+    res.json({ url });
+
+  } catch (err) {
+    console.error("Error in /generate:", err);
+    res.status(500).json({ error: "Failed to generate menu." });
+  }
 });
 
-
+// ✅ Start server on correct port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
