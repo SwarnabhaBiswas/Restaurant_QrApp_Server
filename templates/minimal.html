@@ -2,43 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Modern Menu</title>
+  <title>Minimal Menu</title>
   <style>
+
     body {
+
       font-family: 'Segoe UI', sans-serif;
       padding: 2rem;
-      background: #f9f9f9;
+      background: #F4F9F4;
       color: #333;
     }
     .menu-container {
       max-width: 600px;
       margin: 0 auto;
-      background: white;
+      background: #DCE8DC;
       padding: 2rem;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    #restaurant-title{
+      width: 50px;
+      height: 50px;
+      font-size:2.5rem;
+      font-weight: bold;
+      font-family:'Georgia', serif;
+    }
+    #header{
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .hr1{
+      width: 800px;
+      height: 1px;
+      background-color: black;
+    }
+    .hr2{
+      margin-left: 70px;
+      width: 200px;
+      height: 1px;
+      background-color: black;
+    }
     h1 {
+      text-transform:uppercase ;
+      height: 50px;
+      width: 50px;
       text-align: center;
       margin-bottom: 1rem;
+      color: #4A6B55;
+      
     }
     h2 {
+      font-size: 1.5rem;
+      text-decoration: underline;
       margin-top: 1.5rem;
-      color: #555;
+      color: #2E2E2E;
     }
     ul {
       list-style: none;
       padding: 0;
     }
+  .menu-items{
+    
+    text-transform: capitalize;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    gap: 3 rem;
+    }
+
+  .dish {
+    font-size: 1.2rem;
+    color: #2E2E2E;
+    max-width: 600px;
+    }
+
+  .price {
+    font-size: 1.2rem;
+    color: #2E2E2E;
+    }
     li {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #eee;
+    padding: 0.5rem 0;
+    
     }
   </style>
 </head>
 <body>
   <div class="menu-container">
-    <h1 id="restaurant-title">Menu</h1>
+    <div id="header" >
+      <div class="hr1">
+      </div>
+      <h1 id="restaurant-title">Menu</h1>
+      <div class="hr2">
+      </div>
+    </div>
     <div id="menu-root"></div>
   </div>
 
@@ -52,8 +110,9 @@
 
     for (const category in data) {
       const section = document.createElement('div');
-      section.innerHTML = `<h2>${category}</h2><ul>` +
-        data[category].map(item => `<li>${item.dish} - ₹${item.price}</li>`).join('') +
+      section.innerHTML = `<h2>${category}</h2><ul class="menu">` +
+        data[category].map(item => `<li class="menu-items"> <span class ="dish"> ${item.dish} </span> <span 
+          class ="price"> ₹${item.price} </span></li>`).join('') +
         `</ul>`;
       menuRoot.appendChild(section);
     }
